@@ -1,0 +1,190 @@
+/* ==========================================================================
+   SNIPER ARCADE - DESIGN SYSTEM & GLOBAL STYLES
+   ========================================================================== */
+
+/* 1. CSS VARIABLES & THEME TOKENS */
+:root {
+  /* Color Palette */
+  --bg-main: #080b12;
+  --bg-secondary: #0d121a;
+  --bg-card: #111923;
+  --bg-card-hover: #182332;
+  
+  --primary: #ff3b70;
+  --primary-glow: rgba(255, 59, 112, 0.4);
+  
+  --secondary: #35d6d0;
+  --secondary-glow: rgba(53, 214, 208, 0.4);
+  
+  --text-main: #f5f7fa;
+  --text-muted: #87919e;
+  --gold: #f5c451;
+  --gold-glow: rgba(245, 196, 81, 0.4);
+
+  /* Borders & Dividers */
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-highlight: rgba(255, 59, 112, 0.3);
+
+  /* Fonts */
+  --font-heading: 'Impact', 'Arial Black', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 2. BASE RESET & BODY */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* 3. GLOBAL BACKGROUND EFFECTS (Grid, Scanlines, Glow) */
+.arcade-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+/* Subtle Grid Texture */
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Scanline Effect */
+.bg-scanlines {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0),
+    rgba(255,255,255,0) 50%,
+    rgba(0, 0, 0, 0.25) 50%,
+    rgba(0, 0, 0, 0.25)
+  );
+  background-size: 100% 4px;
+  opacity: 0.6;
+}
+
+/* Background Radial Glow Ambient */
+.glow-primary {
+  position: absolute;
+  top: -10%;
+  left: 20%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+  filter: blur(90px);
+  opacity: 0.5;
+}
+
+.glow-secondary {
+  position: absolute;
+  bottom: 10%;
+  right: 15%;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, var(--secondary-glow) 0%, transparent 70%);
+  filter: blur(100px);
+  opacity: 0.4;
+}
+
+/* 4. TYPOGRAPHY UTILITIES */
+h1, h2, h3, h4, .font-heading {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.text-primary { color: var(--primary); }
+.text-secondary { color: var(--secondary); }
+.text-gold { color: var(--gold); }
+.text-muted { color: var(--text-muted); }
+
+.glow-text-primary {
+  text-shadow: 0 0 12px var(--primary-glow);
+}
+
+.glow-text-secondary {
+  text-shadow: 0 0 12px var(--secondary-glow);
+}
+
+/* 5. UI COMPONENTS UTILITIES (Cards, Badges, Crosshairs) */
+.arcade-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.arcade-card:hover {
+  border-color: var(--border-highlight);
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -10px rgba(255, 59, 112, 0.15);
+}
+
+/* Cyberpunk Corner Accent Decoration */
+.corner-accent {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-color: var(--primary);
+  pointer-events: none;
+}
+.corner-accent.top-left { top: 0; left: 0; border-top: 2px solid; border-left: 2px solid; }
+.corner-accent.top-right { top: 0; right: 0; border-top: 2px solid; border-right: 2px solid; }
+.corner-accent.bottom-left { bottom: 0; left: 0; border-bottom: 2px solid; border-left: 2px solid; }
+.corner-accent.bottom-right { bottom: 0; right: 0; border-bottom: 2px solid; border-right: 2px solid; }
+
+/* 6. KEYFRAME ANIMATIONS */
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.05); }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s infinite ease-in-out;
+}

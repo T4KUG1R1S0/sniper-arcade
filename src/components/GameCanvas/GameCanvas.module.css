@@ -1,0 +1,107 @@
+.gameWrapper {
+  width: 100%;
+  max-width: 1000px;
+  margin: 1.5rem auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Top Bar Stats Dashboard */
+.hudBar {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px 8px 0 0;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.hudItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hudLabel {
+  font-size: 0.7rem;
+  font-weight: bold;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+.hudValue {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  color: var(--text-main);
+}
+
+/* Canvas Container Screen */
+.canvasContainer {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #090d16;
+  border: 1px solid var(--border-color);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  overflow: hidden;
+  cursor: none; /* Sembunyikan cursor bawaan untuk menggantinya dengan scope custom */
+}
+
+.canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Overlays: Start Screen & Game Over Modal */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 11, 18, 0.88);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  padding: 2rem;
+  text-align: center;
+}
+
+.overlayTitle {
+  font-size: 2.2rem;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin: 1.5rem 0 2rem 0;
+  width: 100%;
+  max-width: 500px;
+}
+
+.summaryBox {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+/* Responsive adjust */
+@media (max-width: 768px) {
+  .hudValue {
+    font-size: 1rem;
+  }
+  .overlayTitle {
+    font-size: 1.6rem;
+  }
+}

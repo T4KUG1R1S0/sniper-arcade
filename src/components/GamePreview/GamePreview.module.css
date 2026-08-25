@@ -1,0 +1,185 @@
+.previewSection {
+  padding: 5rem 2rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.mockupContainer {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  transition: border-color var(--transition-normal);
+}
+
+.mockupContainer:hover {
+  border-color: var(--border-highlight);
+}
+
+/* Gameplay Viewport Screen */
+.viewport {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  background: radial-gradient(circle at center, #131c2a 0%, #080b12 90%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Grid & Range Environment Visual */
+.rangeGrid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(to right, rgba(53, 214, 208, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(53, 214, 208, 0.08) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* HUD Top Header Bar */
+.hudTopBar {
+  position: absolute;
+  top: 1.5rem;
+  left: 2rem;
+  right: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.hudStatBox {
+  background: rgba(8, 11, 18, 0.75);
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(8px);
+  padding: 8px 16px;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hudLabel {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  font-weight: bold;
+}
+
+.hudValue {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  color: var(--text-main);
+  letter-spacing: 0.05em;
+}
+
+/* Interactive Scope & Target Simulation */
+.scopeContainer {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 59, 112, 0.6);
+  box-shadow: 0 0 30px rgba(255, 59, 112, 0.25), inset 0 0 20px rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+}
+
+.crosshairHairH {
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 59, 112, 0.4);
+}
+
+.crosshairHairV {
+  position: absolute;
+  height: 100%;
+  width: 1px;
+  background: rgba(255, 59, 112, 0.4);
+}
+
+.dummyTarget {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--secondary);
+  background: rgba(53, 214, 208, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px var(--secondary-glow);
+  animation: pulseTarget 2s infinite ease-in-out;
+}
+
+.dummyTargetCenter {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 8px var(--primary);
+}
+
+@keyframes pulseTarget {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+/* Bottom CTA Banner */
+.bottomAction {
+  padding: 1.5rem 2rem;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.actionText {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .viewport {
+    aspect-ratio: 4 / 3;
+  }
+
+  .scopeContainer {
+    width: 200px;
+    height: 200px;
+  }
+
+  .hudTopBar {
+    top: 0.8rem;
+    left: 0.8rem;
+    right: 0.8rem;
+  }
+
+  .hudStatBox {
+    padding: 4px 10px;
+  }
+
+  .hudValue {
+    font-size: 0.95rem;
+  }
+
+  .bottomAction {
+    flex-direction: column;
+    text-align: center;
+  }
+}

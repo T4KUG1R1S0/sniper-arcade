@@ -1,0 +1,176 @@
+.section {
+  padding: 5rem 2rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* Top 3 Podium Cards Layout */
+.podiumGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  align-items: flex-end;
+  margin-bottom: 3.5rem;
+}
+
+.podiumCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-normal);
+}
+
+.podiumCard:hover {
+  transform: translateY(-6px);
+}
+
+/* Rank 1 (Gold) Highlight */
+.rank1 {
+  border-color: rgba(245, 196, 81, 0.4);
+  background: linear-gradient(180deg, rgba(245, 196, 81, 0.08) 0%, var(--bg-card) 100%);
+  box-shadow: 0 10px 30px rgba(245, 196, 81, 0.15);
+  padding-top: 2.8rem;
+  padding-bottom: 2.8rem;
+  order: 2; /* Tengah */
+}
+
+.rank2 {
+  border-color: rgba(192, 192, 192, 0.3);
+  background: linear-gradient(180deg, rgba(192, 192, 192, 0.05) 0%, var(--bg-card) 100%);
+  order: 1; /* Kiri */
+}
+
+.rank3 {
+  border-color: rgba(205, 127, 50, 0.3);
+  background: linear-gradient(180deg, rgba(205, 127, 50, 0.05) 0%, var(--bg-card) 100%);
+  order: 3; /* Kanan */
+}
+
+.crownBadge {
+  position: absolute;
+  top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.username {
+  font-size: 1.3rem;
+  color: var(--text-main);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.score {
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  letter-spacing: 0.05em;
+}
+
+.accuracyBadge {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+}
+
+/* Rank List Table (Peringkat 4 ke bawah) */
+.listContainer {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 80px 1fr 150px 120px;
+  padding: 1rem 1.5rem;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 80px 1fr 150px 120px;
+  padding: 1rem 1.5rem;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  transition: background var(--transition-fast);
+}
+
+.tableRow:last-child {
+  border-bottom: none;
+}
+
+.tableRow:hover {
+  background: var(--bg-card-hover);
+}
+
+.rankNum {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--text-muted);
+}
+
+.playerName {
+  font-weight: 600;
+  color: var(--text-main);
+  font-size: 0.95rem;
+}
+
+.playerScore {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  color: var(--secondary);
+}
+
+.playerAccuracy {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Responsive Media Queries */
+@media (max-width: 850px) {
+  .podiumGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .rank1 { order: 1; }
+  .rank2 { order: 2; }
+  .rank3 { order: 3; }
+
+  .tableHeader, .tableRow {
+    grid-template-columns: 50px 1fr 100px;
+  }
+
+  .colAccuracy {
+    display: none;
+  }
+}
