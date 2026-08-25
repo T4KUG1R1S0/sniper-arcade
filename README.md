@@ -11,12 +11,12 @@
   <p align="center">
     Uji ketepatan refleks dan manajemen waktu dalam game tembak-menembak futuristik berbasis <b>HTML5 Canvas Engine</b>.
     <br />
-    <a href="https://github.com/T4KUG1R1S0/sniper-arcade"><strong>Jelajahi Dokumentasi »</strong></a>
+    <a href="[https://github.com/T4KUG1R1S0/sniper-arcade](https://github.com/T4KUG1R1S0/sniper-arcade)"><strong>Jelajahi Dokumentasi »</strong></a>
     <br />
     <br />
-    <a href="sniper-arcade.vercel.app">🎮 Mainkan Live Demo</a>
+    <a href="[https://sniper-arcade.vercel.app](https://sniper-arcade.vercel.app)"> Mainkan Live Demo</a>
     ·
-    <a href="https://github.com/T4KUG1R1S0/sniper-arcade/issues"> Laporkan Bug</a>
+    <a href="[https://github.com/T4KUG1R1S0/sniper-arcade/issues](https://github.com/T4KUG1R1S0/sniper-arcade/issues)">🐛 Laporkan Bug</a>
   </p>
 
 </div>
