@@ -10,7 +10,7 @@ interface LeaderboardProps {
 export default function Leaderboard({ showTitle = true }: LeaderboardProps) {
   // Dummy Leaderboard Data
   const topPlayers = [
-    { rank: 1, name: 'TAKU', score: '15,800', accuracy: '99.2%', hits: 158, headshots: 142 },
+    { rank: 1, name: 'TAKUGIRISO', score: '15,800', accuracy: '99.2%', hits: 158, headshots: 142 },
     { rank: 2, name: 'SHADOW', score: '14,250', accuracy: '98.4%', hits: 145, headshots: 120 },
     { rank: 3, name: 'SNIPERX', score: '13,900', accuracy: '97.8%', hits: 141, headshots: 115 },
   ];

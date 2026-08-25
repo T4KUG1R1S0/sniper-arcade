@@ -10,7 +10,7 @@ interface AboutProps {
 export default function About({ showTitle = true }: AboutProps) {
   const teamMembers = [
     {
-      name: 'MBDAY',
+      name: 'Mahabayu',
       role: 'LEAD DEVELOPER',
       bio: 'Architecting high-performance React applications and game physics engines.',
       initials: 'DAY',
@@ -18,7 +18,7 @@ export default function About({ showTitle = true }: AboutProps) {
       linkedin: '#',
     },
     {
-      name: 'MBDAY',
+      name: 'Mahabayu',
       role: 'UI/UX DESIGNER',
       bio: 'Crafting dark cyberpunk visual aesthetic, HUD interfaces, and fluid interactions.',
       initials: 'DAY',
@@ -26,10 +26,10 @@ export default function About({ showTitle = true }: AboutProps) {
       linkedin: '#',
     },
     {
-      name: 'ARDA',
+      name: 'MAHABAYU',
       role: 'GAME MECHANICS',
       bio: 'Designing target recoil, scoring algorithms, and combo multiplier systems.',
-      initials: 'NH',
+      initials: 'DAY',
       github: '#',
       linkedin: '#',
     },
