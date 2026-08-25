@@ -1,10 +1,12 @@
 import { saveScoreToLeaderboard } from '@/utils/leaderboardData';
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Play, RotateCcw, Target, Trophy, Zap, Timer } from 'lucide-react';
+import { Play, RotateCcw, Target, Trophy, Zap, Timer, UserCheck } from 'lucide-react';
 import Button from '@/components/Button/Button';
 import { sfx } from '@/utils/audio';
 import styles from './GameCanvas.module.css';
+
+export type TargetType = 'STANDARD' | 'GOLDEN' | 'BOMB';
 
 interface TargetObject {
   id: number;
@@ -13,7 +15,10 @@ interface TargetObject {
   radius: number;
   dx: number;
   dy: number;
-  isHeadshotZone: boolean;
+  type: TargetType;
+  points: number;
+  spawnTime: number;
+  duration: number;
 }
 
 interface FloatingText {
@@ -25,10 +30,12 @@ interface FloatingText {
   alpha: number;
 }
 
+const AVATAR_OPTIONS = ['🎯', '🥷', '👾', '⚡', '💀', '🤖'];
+
 export default function GameCanvas() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [gameState, setGameState] = useState<'IDLE' | 'PLAYING' | 'GAMEOVER'>('IDLE');
-  
+
   // Game Stats
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(60);
@@ -37,7 +44,12 @@ export default function GameCanvas() {
   const [combo, setCombo] = useState(0);
   const [maxCombo, setMaxCombo] = useState(0);
 
-  // Refs untuk game loop mutable data
+  // User Profile Form State
+  const [playerName, setPlayerName] = useState('Agent_Ghost');
+  const [selectedAvatar, setSelectedAvatar] = useState('🎯');
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // Mutable Game Loop References
   const targetsRef = useRef<TargetObject[]>([]);
   const floatingTextsRef = useRef<FloatingText[]>([]);
   const mousePosRef = useRef({ x: -100, y: -100 });
@@ -47,13 +59,32 @@ export default function GameCanvas() {
   // Perhitungan Akurasi
   const accuracy = shotsFired > 0 ? Math.round((shotsHit / shotsFired) * 100) : 0;
 
-  // Fungsi Spawn Target Acak
-  const spawnTarget = useCallback((width: number, height: number) => {
-    const radius = Math.floor(Math.random() * 15) + 20; // 20px - 35px
-    const x = Math.random() * (width - radius * 2) + radius;
-    const y = Math.random() * (height - radius * 2) + radius;
-    const dx = (Math.random() - 0.5) * 3;
-    const dy = (Math.random() - 0.5) * 3;
+  // Spawner Target Acak
+  const spawnTarget = useCallback((width: number, height: number): TargetObject => {
+    const margin = 60;
+    const x = Math.random() * (width - margin * 2) + margin;
+    const y = Math.random() * (height - margin * 2) + margin;
+
+    const rand = Math.random();
+    let type: TargetType = 'STANDARD';
+    let radius = Math.floor(Math.random() * 10) + 24;
+    let points = 100;
+    let speedMult = 1;
+
+    if (rand > 0.85) {
+      type = 'GOLDEN';
+      radius = 18;
+      points = 500;
+      speedMult = 1.8;
+    } else if (rand > 0.70) {
+      type = 'BOMB';
+      radius = 22;
+      points = -300;
+      speedMult = 0.5;
+    }
+
+    const dx = (Math.random() - 0.5) * 3 * speedMult;
+    const dy = (Math.random() - 0.5) * 3 * speedMult;
 
     return {
       id: Math.random(),
@@ -62,7 +93,10 @@ export default function GameCanvas() {
       radius,
       dx,
       dy,
-      isHeadshotZone: true,
+      type,
+      points,
+      spawnTime: Date.now(),
+      duration: type === 'GOLDEN' ? 3000 : 5000,
     };
   }, []);
 
@@ -74,49 +108,53 @@ export default function GameCanvas() {
     setShotsHit(0);
     setCombo(0);
     setMaxCombo(0);
+    setIsSubmitted(false);
     floatingTextsRef.current = [];
-    
-    // Spawn 4 target awal
+
     const canvas = canvasRef.current;
     if (canvas) {
       targetsRef.current = Array.from({ length: 4 }, () => spawnTarget(canvas.width, canvas.height));
     }
-    
+
     setGameState('PLAYING');
   };
 
-    // Timer Countdown 60 detik
-    useEffect(() => {
-        if (gameState !== 'PLAYING') return;
+  // Timer Countdown 60 detik
+  useEffect(() => {
+    if (gameState !== 'PLAYING') return;
 
-        const timer = setInterval(() => {
-            setTimeLeft((prev) => {
-            if (prev <= 1) {
-                clearInterval(timer);
-                setGameState('GAMEOVER');
-                return 0;
-            }
-            return prev - 1;
-            });
-        }, 1000);
-
-        return () => clearInterval(timer);
-    }, [gameState]);
-
-    // Menyimpan skor secara otomatis saat GAMEOVER
-    useEffect(() => {
-        if (gameState === 'GAMEOVER' && score > 0) {
-            saveScoreToLeaderboard({
-                username: 'Player_Agent', // Default Player Name
-                score: score,
-                accuracy: accuracy,
-                maxCombo: maxCombo,
-                mode: 'classic',
-            });
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setGameState('GAMEOVER');
+          return 0;
         }
-    }, [gameState, score, accuracy, maxCombo]);
+        return prev - 1;
+      });
+    }, 1000);
 
-  // Handle Event Klik/Tembak (Mouse Down / Click)
+    return () => clearInterval(timer);
+  }, [gameState]);
+
+  // Submit Skor ke Leaderboard
+  const handleSubmitScore = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!playerName.trim() || isSubmitted) return;
+
+    saveScoreToLeaderboard({
+      username: playerName.trim(),
+      score,
+      accuracy,
+      maxCombo,
+      mode: 'classic',
+      avatar: selectedAvatar,
+    });
+
+    setIsSubmitted(true);
+  };
+
+  // Handle Event Klik / Tembak
   const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (gameState !== 'PLAYING') return;
 
@@ -130,7 +168,6 @@ export default function GameCanvas() {
     const clickX = (e.clientX - rect.left) * scaleX;
     const clickY = (e.clientY - rect.top) * scaleY;
 
-    // Suara tembakan & efek screen shake
     sfx.playGunshot();
     shakeRef.current = 8;
     setShotsFired((prev) => prev + 1);
@@ -143,35 +180,51 @@ export default function GameCanvas() {
 
       if (dist <= target.radius) {
         hit = true;
-        const isHeadshot = dist <= target.radius * 0.35;
-        const points = isHeadshot ? 200 : 100;
-        
-        // Update Combo & Multiplier
-        setCombo((prevCombo) => {
-          const nextCombo = prevCombo + 1;
-          setMaxCombo((max) => Math.max(max, nextCombo));
-          const multiplier = Math.min(Math.floor(nextCombo / 3) + 1, 5);
-          const finalScore = points * multiplier;
 
-          setScore((s) => s + finalScore);
+        if (target.type === 'BOMB') {
+          setScore((s) => Math.max(0, s + target.points));
+          setCombo(0);
+          sfx.playHitSound(false);
 
-          // Pop up floating text
           floatingTextsRef.current.push({
             id: Math.random(),
-            text: isHeadshot ? `HEADSHOT +${finalScore}` : `+${finalScore}`,
+            text: '-300 BOMB!',
             x: target.x,
             y: target.y,
-            color: isHeadshot ? 'var(--primary)' : 'var(--secondary)',
+            color: '#ff0055',
             alpha: 1.0,
           });
+        } else {
+          setShotsHit((h) => h + 1);
+          const isHeadshot = dist <= target.radius * 0.35;
+          const basePoints = isHeadshot ? target.points * 1.5 : target.points;
 
-          return nextCombo;
-        });
+          setCombo((prevCombo) => {
+            const nextCombo = prevCombo + 1;
+            setMaxCombo((max) => Math.max(max, nextCombo));
+            const multiplier = Math.min(Math.floor(nextCombo / 3) + 1, 5);
+            const finalScore = Math.round(basePoints * multiplier);
 
-        sfx.playHitSound(isHeadshot);
-        setShotsHit((h) => h + 1);
+            setScore((s) => s + finalScore);
 
-        // Respawn target baru
+            const textLabel = isHeadshot ? `HEADSHOT +${finalScore}` : `+${finalScore}`;
+            const textColor = target.type === 'GOLDEN' ? '#ffb703' : isHeadshot ? 'var(--primary)' : 'var(--secondary)';
+
+            floatingTextsRef.current.push({
+              id: Math.random(),
+              text: textLabel,
+              x: target.x,
+              y: target.y,
+              color: textColor,
+              alpha: 1.0,
+            });
+
+            return nextCombo;
+          });
+
+          sfx.playHitSound(isHeadshot);
+        }
+
         newTargets.push(spawnTarget(canvas.width, canvas.height));
       } else {
         newTargets.push(target);
@@ -179,13 +232,13 @@ export default function GameCanvas() {
     });
 
     if (!hit) {
-      setCombo(0); // Meleset = Reset Combo Streak
+      setCombo(0);
     }
 
     targetsRef.current = newTargets;
   };
 
-  // Tracking Posisi Cursor Mouse
+  // Posisi Cursor Mouse
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -207,13 +260,12 @@ export default function GameCanvas() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set resolusi internal canvas
     canvas.width = 1280;
     canvas.height = 720;
 
     const render = () => {
-      // Screen Shake Calculation
       ctx.save();
+
       if (shakeRef.current > 0) {
         const dx = (Math.random() - 0.5) * shakeRef.current;
         const dy = (Math.random() - 0.5) * shakeRef.current;
@@ -222,11 +274,9 @@ export default function GameCanvas() {
         if (shakeRef.current < 0.5) shakeRef.current = 0;
       }
 
-      // 1. Clear Screen / Grid Background
       ctx.fillStyle = '#090d16';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Grid visual
       ctx.strokeStyle = 'rgba(53, 214, 208, 0.05)';
       ctx.lineWidth = 1;
       const gridSize = 60;
@@ -243,34 +293,46 @@ export default function GameCanvas() {
         ctx.stroke();
       }
 
-      // 2. Render & Move Targets (Hanya jika sedang PLAYING)
       if (gameState === 'PLAYING') {
-        targetsRef.current.forEach((t) => {
-          // Update Posisi
+        const now = Date.now();
+
+        targetsRef.current = targetsRef.current.map((t) => {
+          if (now - t.spawnTime > t.duration) {
+            return spawnTarget(canvas.width, canvas.height);
+          }
+
           t.x += t.dx;
           t.y += t.dy;
 
-          // Bounce Off Walls
           if (t.x - t.radius < 0 || t.x + t.radius > canvas.width) t.dx *= -1;
           if (t.y - t.radius < 0 || t.y + t.radius > canvas.height) t.dy *= -1;
 
-          // Outer Circle
           ctx.beginPath();
           ctx.arc(t.x, t.y, t.radius, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(53, 214, 208, 0.2)';
+
+          if (t.type === 'GOLDEN') {
+            ctx.fillStyle = 'rgba(255, 183, 3, 0.3)';
+            ctx.strokeStyle = '#ffb703';
+          } else if (t.type === 'BOMB') {
+            ctx.fillStyle = 'rgba(255, 0, 85, 0.3)';
+            ctx.strokeStyle = '#ff0055';
+          } else {
+            ctx.fillStyle = 'rgba(53, 214, 208, 0.2)';
+            ctx.strokeStyle = '#35d6d0';
+          }
+
           ctx.fill();
-          ctx.strokeStyle = '#35d6d0';
           ctx.lineWidth = 2;
           ctx.stroke();
 
-          // Inner Headshot Bullseye
           ctx.beginPath();
           ctx.arc(t.x, t.y, t.radius * 0.35, 0, Math.PI * 2);
-          ctx.fillStyle = '#ff3b70';
+          ctx.fillStyle = t.type === 'BOMB' ? '#990000' : '#ff3b70';
           ctx.fill();
+
+          return t;
         });
 
-        // 3. Render Floating Text (+Score Animation)
         floatingTextsRef.current.forEach((ft, index) => {
           ctx.font = 'bold 20px "Teko", sans-serif';
           ctx.fillStyle = ft.color;
@@ -286,18 +348,15 @@ export default function GameCanvas() {
           }
         });
 
-        // 4. Custom Sniper Scope Crosshair
         const { x: mx, y: my } = mousePosRef.current;
         if (mx >= 0 && my >= 0) {
           ctx.strokeStyle = '#ff3b70';
           ctx.lineWidth = 1.5;
 
-          // Outer Scope Ring
           ctx.beginPath();
           ctx.arc(mx, my, 25, 0, Math.PI * 2);
           ctx.stroke();
 
-          // Lines Hair Cross
           ctx.beginPath();
           ctx.moveTo(mx - 35, my); ctx.lineTo(mx - 10, my);
           ctx.moveTo(mx + 10, my); ctx.lineTo(mx + 35, my);
@@ -305,7 +364,6 @@ export default function GameCanvas() {
           ctx.moveTo(mx, my + 10); ctx.lineTo(mx, my + 35);
           ctx.stroke();
 
-          // Center Red Dot
           ctx.beginPath();
           ctx.arc(mx, my, 2.5, 0, Math.PI * 2);
           ctx.fillStyle = '#ff3b70';
@@ -322,7 +380,7 @@ export default function GameCanvas() {
     return () => {
       cancelAnimationFrame(animationFrameRef.current);
     };
-  }, [gameState]);
+  }, [gameState, spawnTarget]);
 
   return (
     <div className={styles.gameWrapper}>
@@ -379,7 +437,7 @@ export default function GameCanvas() {
             <div className="corner-accent top-right" />
             <h2 className={styles.overlayTitle}>SNIPER RANGE <span className="text-primary glow-text-primary">ARCADE</span></h2>
             <p style={{ color: 'var(--text-muted)', maxWidth: '450px', marginBottom: '2rem' }}>
-              Test your reflexes. Click targets to score. Hit bullseyes for Headshots and build continuous streaks for score multipliers.
+              Test your reflexes. Hit Golden targets for +500 pts and avoid Red Bomb targets!
             </p>
             <Button variant="primary" size="lg" onClick={startGame}>
               <Play size={20} fill="currentColor" /> START MISSION
@@ -413,6 +471,66 @@ export default function GameCanvas() {
                 <div className={styles.hudValue} style={{ color: 'var(--primary)' }}>{maxCombo}X</div>
               </div>
             </div>
+
+            {/* Form Input Highscore Agent */}
+            <form onSubmit={handleSubmitScore} style={{ marginBottom: '1.5rem', width: '100%', maxWidth: '360px' }}>
+              <div style={{ marginBottom: '0.75rem', textAlign: 'left' }}>
+                <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.25rem' }}>
+                  CHOOSE AVATAR & ENTER CALLSIGN
+                </label>
+                
+                {/* Avatar Selection */}
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem', justifyContent: 'center' }}>
+                  {AVATAR_OPTIONS.map((av) => (
+                    <button
+                      type="button"
+                      key={av}
+                      onClick={() => setSelectedAvatar(av)}
+                      style={{
+                        background: selectedAvatar === av ? 'var(--primary-glow)' : 'var(--bg-card)',
+                        border: `1px solid ${selectedAvatar === av ? 'var(--primary)' : 'var(--border-color)'}`,
+                        fontSize: '1.2rem',
+                        padding: '0.4rem 0.6rem',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {av}
+                    </button>
+                  ))}
+                </div>
+
+                <input
+                  type="text"
+                  maxLength={16}
+                  value={playerName}
+                  onChange={(e) => setPlayerName(e.target.value)}
+                  disabled={isSubmitted}
+                  placeholder="Enter Agent Name..."
+                  style={{
+                    width: '100%',
+                    padding: '0.6rem 1rem',
+                    background: 'var(--bg-card)',
+                    border: '1px solid var(--border-color)',
+                    color: '#fff',
+                    borderRadius: '6px',
+                    textAlign: 'center',
+                    fontFamily: 'var(--font-heading)',
+                    fontSize: '1.1rem',
+                  }}
+                />
+              </div>
+
+              {!isSubmitted ? (
+                <Button variant="secondary" fullWidth size="sm" type="submit">
+                  <UserCheck size={16} /> SAVE TO LEADERBOARD
+                </Button>
+              ) : (
+                <div style={{ color: 'var(--secondary)', fontSize: '0.9rem', textAlign: 'center' }}>
+                  ✓ Score Saved to Leaderboard!
+                </div>
+              )}
+            </form>
 
             <Button variant="primary" size="lg" onClick={startGame}>
               <RotateCcw size={18} /> PLAY AGAIN

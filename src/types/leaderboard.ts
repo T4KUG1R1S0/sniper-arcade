@@ -1,11 +1,10 @@
 export interface LeaderboardEntry {
   id: string;
-  rank?: number;
   username: string;
   score: number;
   accuracy: number;
   maxCombo: number;
-  mode: 'classic' | 'time-attack' | 'precision';
-  avatarUrl?: string;
+  mode: string;
+  avatar?: string; // Add this line
   date: string;
 }

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-interface ButtonProps {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   to?: string;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => void;
   variant?: 'primary' | 'secondary' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   fullWidth?: boolean;
@@ -19,6 +19,9 @@ export default function Button({
   size = 'md',
   fullWidth = false,
   className = '',
+  type = 'button',
+  style,
+  ...props
 }: ButtonProps) {
   const baseStyles: React.CSSProperties = {
     display: 'inline-flex',
@@ -66,18 +69,30 @@ export default function Button({
     ...baseStyles,
     ...sizeStyles[size],
     ...variantStyles[variant],
+    ...style,
   };
 
   if (to) {
     return (
-      <Link to={to} style={combinedStyles} className={`cyber-button ${className}`}>
+      <Link 
+        to={to} 
+        style={combinedStyles} 
+        className={`cyber-button ${className}`}
+        onClick={onClick as React.MouseEventHandler<HTMLAnchorElement>}
+      >
         {children}
       </Link>
     );
   }
 
   return (
-    <button onClick={onClick} style={combinedStyles} className={`cyber-button ${className}`}>
+    <button
+      type={type}
+      onClick={onClick}
+      style={combinedStyles}
+      className={`cyber-button ${className}`}
+      {...props}
+    >
       {children}
     </button>
   );
