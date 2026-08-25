@@ -112,6 +112,27 @@
   font-size: 0.8rem;
   color: var(--text-muted);
 }
+.creditWrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  color: var(--text-muted, #888);
+}
+
+.terminalIcon {
+  color: var(--primary, #00f0ff);
+  filter: drop-shadow(0 0 4px var(--primary-glow, rgba(0, 240, 255, 0.6)));
+}
+
+.authorBadge {
+  color: var(--primary, #00f0ff);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 8px var(--primary-glow, rgba(0, 240, 255, 0.6));
+}
 
 .heartText {
   color: var(--primary);

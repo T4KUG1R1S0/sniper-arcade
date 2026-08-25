@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Shield } from 'lucide-react';
+import { Shield, Terminal } from 'lucide-react';
 import styles from './Footer.module.css';
 
 export default function Footer() {
@@ -62,8 +62,10 @@ export default function Footer() {
         <div>
           © {new Date().getFullYear()} SNIPER ARCADE. All Rights Reserved.
         </div>
-        <div>
-          Crafted with <span className={styles.heartText}>♥</span> for High Score Hunters
+        <div className={styles.creditWrapper}>
+          <Terminal size={14} className={styles.terminalIcon} />
+          <span>DEVELOPED BY</span>
+          <span className={styles.authorBadge}>[ T4KUG1R1S0 ]</span>
         </div>
       </div>
     </footer>
