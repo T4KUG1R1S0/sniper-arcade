@@ -11,7 +11,7 @@ export const INITIAL_LEADERBOARD: LeaderboardEntry[] = [
   { id: '5', username: 'PixelTrigger', score: 8700, accuracy: 81, maxCombo: 8, mode: 'classic', avatar: '🤖', date: '2026-08-24' },
   
   // Time Attack Mode
-  { id: '6', username: 'SpeedShooter', score: 18900, accuracy: 98, maxCombo: 24, mode: 'time-attack', avatar: '⚡', date: '2026-08-20' },
+  { id: '6', username: 'TAKUGIRISO', score: 58900, accuracy: 98, maxCombo: 24, mode: 'time-attack', avatar: '😹', date: '2026-08-20' },
   { id: '7', username: 'VortexSniper', score: 16500, accuracy: 94, maxCombo: 20, mode: 'time-attack', avatar: '🎯', date: '2026-08-22' },
   
   // Precision Streak Mode
